@@ -4,7 +4,7 @@ import time
 
 class slackCommunication(object):
 	def __init__(self):
-		self.slack_client = SlackClient('xoxb-321240529424-a3ChiZdGsz10U0zvADdscaz6')
+		self.slack_client = SlackClient('')
 		self.appName = "nlpbot_test"
 
 	def slackConnect(self):	
