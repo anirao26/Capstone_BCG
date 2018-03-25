@@ -40,6 +40,10 @@ class SQLNet(nn.Module):
                     self.SQL_TOK, our_model=True, trainable=trainable_emb)
         
         #Predict aggregator
+        print("N_Word", N_word)
+        print("N_h", N_h)
+        print("N_Word", N_word)
+        
         self.agg_pred = AggPredictor(N_word, N_h, N_depth, use_ca=use_ca)
 
         #Predict selected column
@@ -50,11 +54,11 @@ class SQLNet(nn.Module):
         self.cond_pred = SQLNetCondPredictor(N_word, N_h, N_depth,
                 self.max_col_num, self.max_tok_num, use_ca, gpu)
 
-
         self.CE = nn.CrossEntropyLoss()
         self.softmax = nn.Softmax()
         self.log_softmax = nn.LogSoftmax()
         self.bce_logit = nn.BCEWithLogitsLoss()
+
         if gpu:
             self.cuda()
 
