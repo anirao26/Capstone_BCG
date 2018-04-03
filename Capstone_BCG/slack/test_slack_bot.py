@@ -1,41 +1,38 @@
+import slack_bot
 import pytest
 
-input = [{'type': 'message', 'channel': 'D9F72FLAU', 'user': 'U9E0RG84R', 'text': 'dasda', 'ts': '1519801024.000103', 'source_team': 'T9DT55SHE', 'team': 'T9DT55SHE'}]
-
-
-@pytest.fixture
-def slackCommunication():
-	from slack_bot import slackCommunication
-	return slackCommunication()
-
+input = [{'user': 'U9F9U2SJV', 'source_team': 'T9DT55SHE', 'team': 'T9DT55SHE', 'type': 'message', 'ts': '1522710309.000105', 'text': '<@U9GTU0MU7> test02', 'channel': 'D9F71S4KA'}]
 
 @pytest.fixture
-def mainFunc():
-	from slack_bot import mainFunc
-	return mainFunc()
+def initiateSlackCommunication():
+    from slack_bot import SlackCommunication
+    return SlackCommunication()
 
-@pytest.mark.skip(reason = "Fully tested")
-def test_slackConnect(slackCommunication):
-	assert slackCommunication.slackConnect() == True
+@pytest.fixture
+def mainFunction():
+    from slack_bot import MainFunction
+    return MainFunction()
 
-def test_parseSlackInput(slackCommunication):
-	assert slackCommunication.parseSlackInput(input, "U9E0RG84R") == ["U9E0RG84R", "dasda", "D9F72FLAU"]
+def test_slackConnection(initiateSlackCommunication):
+    assert initiateSlackCommunication.slackConnection() == True
 
-def test_getBotID(slackCommunication):
-	assert slackCommunication.getBotID("nlpbot_test") == 'U9E0RG84R'
-
-def test_writeToSlack(slackCommunication):
-	assert slackCommunication.writeToSlack("D9F72FLAU", "Testing writing to slack.")['ok'] == True
-
-@pytest.mark.skip(reason = "Not fully implemented")
-def test_slackReadRTM(slackCommunication):
-	slackCommunication.slackConnect()
-	print(slackCommunication.slackReadRTM)
-
-def test_decideWhethertotakeAction_message(mainFunc):
-	input = ["U9E0RG84R", "dasda", "D9F72FLAU"]
-	assert mainFunc.decideWhethertotakeAction(input)
-
-def test_decideWhethertotakeAction_None(mainFunc):
-	input = [None, None, None]
-	assert mainFunc.decideWhethertotakeAction(input)
+@pytest.mark.skip(reason="Not fully implemented")    
+def test_slackReadRTM(initiateSlackCommunication):
+    assert initiateSlackCommunication.slackReadRTM()
+    
+def test_parseSlackInput(initiateSlackCommunication):
+    assert initiateSlackCommunication.parseSlackInput(input, 'U9GTU0MU7') == ['U9F9U2SJV', 'test02', 'D9F71S4KA']
+    
+def test_getBotID(initiateSlackCommunication):
+    assert initiateSlackCommunication.getBotID('test-bot') == 'U9GTU0MU7'
+    
+def test_writeToSlack(initiateSlackCommunication):
+    assert initiateSlackCommunication.writeToSlack('D9F71S4KA', 'Testing writing to slack')['ok'] == True
+    
+def test_decideWhetherToTakeAction_None(mainFunction):
+    input = [None, None, None]
+    assert mainFunction.decideWhetherToTakeAction(input)
+    
+def test_decideWhetherToTakeAction_Message(mainFunction):
+    input = ['U9F9U2SJV', 'test03', 'D9F71S4KA']
+    assert mainFunction.decideWhetherToTakeAction(input)
