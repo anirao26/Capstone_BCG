@@ -5,7 +5,7 @@ from boto.mws.connection import api_call_map
 
 class SlackCommunication(object):
     def __init__(self): 
-        self.slack_client = SlackClient("xoxb-322946021959-ZulMf9FPaPZzoDeoph9RMdxo")
+        self.slack_client = SlackClient("API Code here")
         self.appName = 'test-bot'
     
     def slackConnection(self):
