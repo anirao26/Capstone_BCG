@@ -1,11 +1,13 @@
 from slackclient import SlackClient
-import time
+import time, sys, html
 from database import Database
-import html
+
 
 class SlackCommunication(object):
-    def __init__(self): 
-        self.slack_client = SlackClient("Slack API Key")
+    API_KEY = ''
+    def __init__(self):
+        SlackCommunication.API_KEY = sys.argv[1]
+        self.slack_client = SlackClient(SlackCommunication.API_KEY)
         self.appName = 'test-bot'
         self.db = Database()
     
