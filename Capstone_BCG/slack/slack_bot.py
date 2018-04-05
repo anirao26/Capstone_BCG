@@ -5,7 +5,7 @@ import html
 
 class SlackCommunication(object):
     def __init__(self): 
-        self.slack_client = SlackClient("xoxb-322946021959-ZulMf9FPaPZzoDeoph9RMdxo")
+        self.slack_client = SlackClient("Slack API Key")
         self.appName = 'test-bot'
         self.db = Database()
     
