@@ -1,12 +1,13 @@
 from slackclient import SlackClient
 import time
-from boto.mws.connection import api_call_map
-
+from database import Database
+import html
 
 class SlackCommunication(object):
     def __init__(self): 
-        self.slack_client = SlackClient("API Token here")
+        self.slack_client = SlackClient("xoxb-322946021959-ZulMf9FPaPZzoDeoph9RMdxo")
         self.appName = 'test-bot'
+        self.db = Database()
     
     def slackConnection(self):
         return self.slack_client.rtm_connect()
@@ -36,7 +37,10 @@ class SlackCommunication(object):
                     return user.get('id')
                 
     def writeToSlack(self, channel, message):
-        return self.slack_client.api_call('chat.postMessage', channel=channel, text=message, as_user=True)
+        if message:
+            message = html.unescape(message)
+            sql_output = self.db.fetch_data(message)
+            return self.slack_client.api_call('chat.postMessage', channel=channel, text=sql_output, as_user=True)
     
 
 class MainFunction(SlackCommunication):
