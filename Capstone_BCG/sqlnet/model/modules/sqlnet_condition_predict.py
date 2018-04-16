@@ -15,21 +15,21 @@ class SQLNetCondPredictor(nn.Module):
         self.gpu = gpu
         self.use_ca = use_ca
 
-        self.cond_num_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_num_lstm = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         self.cond_num_att = nn.Linear(N_h, 1)
         self.cond_num_out = nn.Sequential(nn.Linear(N_h, N_h),
                 nn.Tanh(), nn.Linear(N_h, 5))
-        self.cond_num_name_enc = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_num_name_enc = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         self.cond_num_col_att = nn.Linear(N_h, 1)
         self.cond_num_col2hid1 = nn.Linear(N_h, 2*N_h)
         self.cond_num_col2hid2 = nn.Linear(N_h, 2*N_h)
 
-        self.cond_col_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_col_lstm = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         if use_ca:
             print("Using column attention on where predicting")
@@ -37,36 +37,36 @@ class SQLNetCondPredictor(nn.Module):
         else:
             print("Not using column attention on where predicting")
             self.cond_col_att = nn.Linear(N_h, 1)
-        self.cond_col_name_enc = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_col_name_enc = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         self.cond_col_out_K = nn.Linear(N_h, N_h)
         self.cond_col_out_col = nn.Linear(N_h, N_h)
         self.cond_col_out = nn.Sequential(nn.ReLU(), nn.Linear(N_h, 1))
 
-        self.cond_op_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_op_lstm = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         if use_ca:
             self.cond_op_att = nn.Linear(N_h, N_h)
         else:
             self.cond_op_att = nn.Linear(N_h, 1)
         self.cond_op_out_K = nn.Linear(N_h, N_h)
-        self.cond_op_name_enc = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_op_name_enc = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         self.cond_op_out_col = nn.Linear(N_h, N_h)
         self.cond_op_out = nn.Sequential(nn.Linear(N_h, N_h), nn.Tanh(),
                 nn.Linear(N_h, 3))
 
-        self.cond_str_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_str_lstm = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         self.cond_str_decoder = nn.LSTM(input_size=self.max_tok_num,
-                hidden_size=N_h, num_layers=N_depth,
+                hidden_size=int(N_h), num_layers=int(N_depth),
                 batch_first=True, dropout=0.3)
-        self.cond_str_name_enc = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_str_name_enc = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         self.cond_str_out_g = nn.Linear(N_h, N_h)
         self.cond_str_out_h = nn.Linear(N_h, N_h)
@@ -123,9 +123,9 @@ class SQLNetCondPredictor(nn.Module):
         num_col_att = self.softmax(num_col_att_val)
         K_num_col = (e_num_col * num_col_att.unsqueeze(2)).sum(1)
         cond_num_h1 = self.cond_num_col2hid1(K_num_col).view(
-                B, 4, self.N_h/2).transpose(0, 1).contiguous()
+                B, 4, (int(self.N_h/2))).transpose(0, 1).contiguous()
         cond_num_h2 = self.cond_num_col2hid2(K_num_col).view(
-                B, 4, self.N_h/2).transpose(0, 1).contiguous()
+                B, 4, (int(self.N_h/2))).transpose(0, 1).contiguous()
 
         h_num_enc, _ = run_lstm(self.cond_num_lstm, x_emb_var, x_len,
                 hidden=(cond_num_h1, cond_num_h2))
@@ -153,7 +153,7 @@ class SQLNetCondPredictor(nn.Module):
                 if num < max_x_len:
                     col_att_val[idx, :, num:] = -100
             col_att = self.softmax(col_att_val.view(
-                (-1, max_x_len))).view(B, -1, max_x_len)
+                (-1, int(max_x_len)))).view(B, -1, int(max_x_len))
             K_cond_col = (h_col_enc.unsqueeze(1) * col_att.unsqueeze(3)).sum(2)
         else:
             col_att_val = self.cond_col_att(h_col_enc).squeeze()
@@ -269,7 +269,7 @@ class SQLNetCondPredictor(nn.Module):
                         cur_cond_str_score[b, :, num:] = -100
                 scores.append(cur_cond_str_score)
 
-                _, ans_tok_var = cur_cond_str_score.view(B*4, max_x_len).max(1)
+                _, ans_tok_var = cur_cond_str_score.view(B*4, (int(max_x_len))).max(1)
                 ans_tok = ans_tok_var.data.cpu()
                 data = torch.zeros(B*4, self.max_tok_num).scatter_(
                         1, ans_tok.unsqueeze(1), 1)

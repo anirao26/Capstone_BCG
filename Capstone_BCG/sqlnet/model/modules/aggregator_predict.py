@@ -13,13 +13,13 @@ class AggPredictor(nn.Module):
         super(AggPredictor, self).__init__()
         self.use_ca = use_ca
 
-        self.agg_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.agg_lstm = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         if use_ca:
             print("Using column attention on aggregator predicting")
-            self.agg_col_name_enc = nn.LSTM(input_size=N_word,
-                    hidden_size=N_h/2, num_layers=N_depth,
+            self.agg_col_name_enc = nn.LSTM(input_size=int(N_word),
+                    hidden_size=int(N_h/2), num_layers=int(N_depth),
                     batch_first=True, dropout=0.3, bidirectional=True)
             self.agg_att = nn.Linear(N_h, N_h)
         else:

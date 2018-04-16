@@ -15,11 +15,11 @@ class Seq2SQLCondPredictor(nn.Module):
         self.max_col_num = max_col_num
         self.gpu = gpu
 
-        self.cond_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
-                num_layers=N_depth, batch_first=True,
+        self.cond_lstm = nn.LSTM(input_size=int(N_word), hidden_size=int(N_h/2),
+                num_layers=int(N_depth), batch_first=True,
                 dropout=0.3, bidirectional=True)
         self.cond_decoder = nn.LSTM(input_size=self.max_tok_num,
-                hidden_size=N_h, num_layers=N_depth,
+                hidden_size=int(N_h), num_layers=int(N_depth),
                 batch_first=True, dropout=0.3)
 
         self.cond_out_g = nn.Linear(N_h, N_h)

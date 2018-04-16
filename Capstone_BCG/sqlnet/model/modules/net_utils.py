@@ -7,7 +7,10 @@ def run_lstm(lstm, inp, inp_len, hidden=None):
     # Run the LSTM using packed sequence.
     # This requires to first sort the input according to its length.
     sort_perm = np.array(sorted(list(range(len(inp_len))),
-        key=lambda k:inp_len[k], reverse=True))
+        key=lambda k:inp_len[k], reverse=True)).astype(int)
+
+    sort_perm = torch.from_numpy(sort_perm)
+    
     sort_inp_len = inp_len[sort_perm]
     sort_perm_inv = np.argsort(sort_perm)
     if inp.is_cuda:
@@ -33,8 +36,9 @@ def col_name_encode(name_inp_var, name_len, col_len, enc_lstm):
     #The embedding of a column name is the last state of its LSTM output.
     name_hidden, _ = run_lstm(enc_lstm, name_inp_var, name_len)
     name_out = name_hidden[tuple(range(len(name_len))), name_len-1]
+
     ret = torch.FloatTensor(
-            len(col_len), max(col_len), name_out.size()[1]).zero_()
+            len(col_len), np.asscalar(max(col_len)), name_out.size()[1]).zero_()
     if name_out.is_cuda:
         ret = ret.cuda()
 
