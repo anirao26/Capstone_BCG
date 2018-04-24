@@ -8,17 +8,17 @@ def run_lstm(lstm, inp, inp_len, hidden=None):
     # This requires to first sort the input according to its length.
     sort_perm = np.array(sorted(list(range(len(inp_len))),
         key=lambda k:inp_len[k], reverse=True)).astype(int)
-
-    sort_perm = torch.from_numpy(sort_perm)
     
+    sort_perm = torch.LongTensor(sort_perm)
     sort_inp_len = inp_len[sort_perm]
     sort_perm_inv = np.argsort(sort_perm)
+
     if inp.is_cuda:
         sort_perm = torch.LongTensor(sort_perm).cuda()
         sort_perm_inv = torch.LongTensor(sort_perm_inv).cuda()
 
-    lstm_inp = nn.utils.rnn.pack_padded_sequence(inp[sort_perm],
-            sort_inp_len, batch_first=True)
+        
+    lstm_inp = nn.utils.rnn.pack_padded_sequence(inp[sort_perm], sort_inp_len, batch_first=True)
     if hidden is None:
         lstm_hidden = None
     else:
