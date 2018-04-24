@@ -270,7 +270,7 @@ def load_word_emb(file_name, load_used=False, use_small=False):
     if not load_used:
         print(('Loading word embedding from %s'%file_name))
         ret = {}
-        with open(file_name) as inf:
+        with open(file_name, encoding='utf-8') as inf:
             for idx, line in enumerate(inf):
                 if (use_small and idx >= 5000):
                     break
