@@ -148,11 +148,12 @@ class SQLNet(nn.Module):
     def loss(self, score, truth_num, pred_entry, gt_where):
         pred_agg, pred_sel, pred_cond = pred_entry
         agg_score, sel_score, cond_score = score
-
+        
         loss = 0
         if pred_agg:
             agg_truth = [x[0] for x in truth_num]
-            data = torch.from_numpy(np.array(agg_truth))
+            data = torch.LongTensor(np.array(agg_truth))
+            # data = torch.from_numpy(np.array(agg_truth))
             if self.gpu:
                 agg_truth_var = Variable(data.cuda())
             else:
@@ -162,7 +163,8 @@ class SQLNet(nn.Module):
 
         if pred_sel:
             sel_truth = [x[1] for x in truth_num]
-            data = torch.from_numpy(np.array(sel_truth))
+            data = torch.LongTensor(np.array(sel_truth))
+            # data = torch.from_numpy(np.array(sel_truth))
             if self.gpu:
                 sel_truth_var = Variable(data.cuda())
             else:
@@ -176,7 +178,8 @@ class SQLNet(nn.Module):
                     cond_op_score, cond_str_score = cond_score
             #Evaluate the number of conditions
             cond_num_truth = [x[2] for x in truth_num]
-            data = torch.from_numpy(np.array(cond_num_truth))
+            data = torch.LongTensor(np.array(cond_num_truth))
+            # data = torch.from_numpy(np.array(cond_num_truth))
             if self.gpu:
                 cond_num_truth_var = Variable(data.cuda())
             else:
@@ -189,6 +192,8 @@ class SQLNet(nn.Module):
             for b in range(B):
                 if len(truth_num[b][3]) > 0:
                     truth_prob[b][list(truth_num[b][3])] = 1
+            
+            # data = torch.LongTensor(np.array(truth_prob))
             data = torch.from_numpy(truth_prob)
             if self.gpu:
                 cond_col_truth_var = Variable(data.cuda())
@@ -197,16 +202,19 @@ class SQLNet(nn.Module):
 
             sigm = nn.Sigmoid()
             cond_col_prob = sigm(cond_col_score)
+                        
             bce_loss = -torch.mean( 3*(cond_col_truth_var * \
                     torch.log(cond_col_prob+1e-10)) + \
                     (1-cond_col_truth_var) * torch.log(1-cond_col_prob+1e-10) )
+            
             loss += bce_loss
 
             #Evaluate the operator of conditions
             for b in range(len(truth_num)):
                 if len(truth_num[b][4]) == 0:
                     continue
-                data = torch.from_numpy(np.array(truth_num[b][4]))
+                data = torch.LongTensor(np.array(truth_num[b][4]))
+                # data = torch.from_numpy(np.array(truth_num[b][4]))
                 if self.gpu:
                     cond_op_truth_var = Variable(data.cuda())
                 else:
@@ -221,7 +229,8 @@ class SQLNet(nn.Module):
                     cond_str_truth = gt_where[b][idx]
                     if len(cond_str_truth) == 1:
                         continue
-                    data = torch.from_numpy(np.array(cond_str_truth[1:]))
+                    data = torch.LongTensor(np.array(cond_str_truth[1:]))
+                    # data = torch.from_numpy(np.array(cond_str_truth[1:]))
                     if self.gpu:
                         cond_str_truth_var = Variable(data.cuda())
                     else:
